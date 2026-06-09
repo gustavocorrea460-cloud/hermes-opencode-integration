@@ -162,6 +162,22 @@ wait_for_port() {
     return 1
 }
 
+# ── WSL detection ──
+IS_WSL=false
+if grep -qi microsoft /proc/version 2>/dev/null || uname -r 2>/dev/null | grep -qi microsoft; then
+    IS_WSL=true
+fi
+
+# ── Port check ──
+_check_port() {
+    local port="$1"
+    if ss -tlnp 2>/dev/null | grep -q ":$port "; then
+        warn "Porta $port já está em uso por outro processo"
+        return 1
+    fi
+    return 0
+}
+
 # ═══════════════════════════════════════════════════════════════════════
 #  CHECKLIST
 # ═══════════════════════════════════════════════════════════════════════
@@ -177,7 +193,7 @@ echo -e "${CYAN}Este instalador vai:${NC}"
 echo ""
 echo "  1/8  Verificar pré-requisitos (Python 3, Node.js)"
 echo "  2/8  Instalar OpenCode (se necessário)"
-echo "  3/8  Instalar Hermes Agent (se necessário)"
+echo "  3/8  Instalar Hermes Agent (se necessário, ~5min download)"
 echo "  4/8  Baixar proxy + MCP bridge + scripts"
 echo "  5/8  Configurar (config.yaml, opencode.json, .env, systemd)"
 echo "  6/8  Iniciar serviços (opencode serve + proxy)"
@@ -185,6 +201,9 @@ echo "  7/8  Configurar Hermes para usar o provider"
 echo "  8/8  Testar e mostrar resultado"
 echo ""
 echo -e "${YELLOW}Requer: Python 3.11+, Node.js 20+, 2GB RAM livre${NC}"
+if [ "$IS_WSL" = true ]; then
+    echo -e "${YELLOW}⚠️  WSL detectado — systemd não disponível. Usará start.sh manual.${NC}"
+fi
 echo ""
 
 if [ "$YES" = false ] && [ -t 0 ]; then
@@ -257,12 +276,14 @@ HERMES_BIN="$HERMES_DIR/hermes-agent/venv/bin/hermes"
 if [ -f "$HERMES_BIN" ]; then
     ok "Hermes Agent: $("$HERMES_BIN" --version 2>/dev/null || echo "instalado")"
 else
-    info "Instalando Hermes Agent..."
-    curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash 2>&1 | tail -2 || true
+    info "Instalando Hermes Agent (download de ~100MB, pode levar alguns minutos)..."
+    echo ""
+    curl -#fsSL https://hermes-agent.nousresearch.com/install.sh | bash 2>&1 || true
     if [ -f "$HERMES_BIN" ]; then
         ok "Hermes Agent instalado"
     else
-        warn "Hermes Agent pode não ter instalado. Continue manualmente: curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash"
+        warn "Hermes Agent pode não ter instalado. Tente manual:"
+        warn "  curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash"
     fi
 fi
 
@@ -482,6 +503,11 @@ fi
 
 # 5d. systemd
 hr
+if [ "$IS_WSL" = true ]; then
+    info "WSL detectado — systemd não disponível. Use ~/.hermes/start.sh para iniciar."
+    info "Arquivos .service criados mesmo assim para referência."
+fi
+
 mkdir -p "$SYSTEMD_DIR"
 if [ ! -f "$SYSTEMD_DIR/opencode-serve.service" ]; then
     cat > "$SYSTEMD_DIR/opencode-serve.service" << 'SVC'
@@ -526,6 +552,10 @@ fi
 #  6/8 — INICIAR
 # ═══════════════════════════════════════════════════════════════════════
 step 6 "Iniciando Serviços"
+
+# Verificar portas
+_check_port 8800 || true
+_check_port 4101 || true
 
 # Mata processos antigos (ignora se não existirem)
 fuser -k 4101/tcp 2>/dev/null || true

@@ -111,6 +111,9 @@ python3 -m pytest tests/ -v
 
 ### Systemd (auto-start on boot)
 
+> **⚠️ WSL (Windows):** Systemd is not available on WSL by default. Use `~/.hermes/start.sh` instead.  
+> To enable systemd on WSL: https://aka.ms/wsl-systemd
+
 ```bash
 systemctl --user enable --now opencode-serve.service
 systemctl --user enable --now hermes-proxy.service
