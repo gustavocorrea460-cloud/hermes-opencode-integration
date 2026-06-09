@@ -315,6 +315,24 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ---
 
+## 🤝 Community
+
+This project is open source and **built for the Hermes Agent community**. I hope you find it useful — and even better, I hope you help improve it.
+
+**Ways to contribute:**
+
+| | |
+|---|---|
+| ⭐ **Star the repo** | Show support and help others discover it |
+| 🐛 **Report bugs** | Open an issue if something doesn't work |
+| 💡 **Suggest features** | Ideas are welcome — open a discussion |
+| 🔧 **Submit PRs** | Code, docs, tests — all contributions matter |
+| 📢 **Share** | Tell other Hermes users about it |
+
+> **A quick note on the name:** The project is called **Hermes Agent** (no accent), named after the Greek god **Ἑρμῆς** (Hermes) — messenger of the gods, patron of travelers, and guide of souls. Not to be confused with the French fashion house **Hermès** (with accent). Both derive from the same name, but the AI agent project uses the anglicized spelling.
+
+---
+
 ## License
 
 [MIT](LICENSE) © 2026 gustavocorrea460-cloud
