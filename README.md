@@ -4,7 +4,7 @@
 
 # ⚡ Hermes + OpenCode Integration
 
-**Run Hermes Agent with 110 free models — zero API costs, zero config.**
+**Run Hermes Agent with 20 free models — zero API costs, zero config.**
 
 <br>
 
@@ -31,7 +31,7 @@ bash <(curl -fsSL https://raw.githubusercontent.com/gustavocorrea460-cloud/herme
 
 | You pay this today | With this integration |
 |---|---|
-| **$5–50/month** for Claude/GPT API calls | **$0.00** — 110 free models |
+| **$5–50/month** for Claude/GPT API calls | **$0.00** — 20 free models |
 | **Complex setup** — multiple API keys, providers, fallbacks | **One command** — done in 2 minutes |
 | **Context lost** — new session = cold start every time | **KV cache reuse** — picks up where you left off |
 | **Limited tools** — models don't have access to your system | **64 MCP tools** — terminal, browser, cron, kanban, memory |
@@ -45,8 +45,8 @@ bash <(curl -fsSL https://raw.githubusercontent.com/gustavocorrea460-cloud/herme
 | | | |
 |---|---|---|
 | 🎯 **Zero-cost** | ⏱️ **Session reuse** | 🔧 **MCP Bridge** |
-| 110 free models | 1:1 session mapping | 64 Hermes tools |
-| NVIDIA + OpenCode | KV cache preserved | terminal, browser, cron |
+| 20 free models | 1:1 session mapping | 64 Hermes tools |
+| OpenCode native | KV cache preserved | terminal, browser, cron |
 | | | |
 | 📸 **Image support** | 💾 **Disk persistence** | 🛡️ **Security first** |
 | auto `image_url` → file | survives proxy restart | CORS, body limit, redaction |
@@ -63,7 +63,7 @@ bash <(curl -fsSL https://raw.githubusercontent.com/gustavocorrea460-cloud/herme
 | | **Paid API (OpenAI/Claude)** | **This integration** |
 |---|---|---|
 | 💰 Monthly cost | $5–50+ | **$0.00** |
-| 🧠 Models | GPT-4, Claude 4 | DeepSeek V4, Llama 3.1 70B, Gemma 3, + 107 more |
+| 🧠 Models | GPT-4, Claude 4 | DeepSeek V4 Flash, Kimi K2.5, Minimax M3, + 17 more |
 | ⏱️ Context window | 128K–200K | **1M tokens** (DeepSeek) |
 | 🔧 Tool calling | ✅ | ✅ |
 | 📸 Vision | ✅ | ✅ |
@@ -82,7 +82,7 @@ bash <(curl -fsSL https://raw.githubusercontent.com/gustavocorrea460-cloud/herme
 | **Session-aware** — reuses OpenCode sessions to preserve KV cache | **Not a session manager** — Hermes still manages its own conversations |
 | **An MCP bridge** — exposes 64 Hermes tools to OpenCode models | **Not an MCP server catalog** — doesn't install external MCPs (GitHub, DBs, etc.) |
 | **A local inference engine** — runs on your machine, no external API calls | **Not a cloud service** — you provide the hardware, Hermes provides the agent |
-| **Free** — 110 models with $0 input and output cost | **Not unlimited** — external providers (NVIDIA) may have rate limits |
+| **Free** — 20 OpenCode native models with $0 cost | **Not unlimited** — some models may have rate limits |
 
 **Bottom line:** Hermes works exactly as before — same commands, same tools, same skills, same cron, same Telegram/Discord/Slack integration. The only difference is that **the LLM inference is now free**, running through OpenCode serve instead of a paid API.
 
@@ -118,8 +118,8 @@ hermes
 ┌─────────────┐     OpenAI API      ┌───────────────┐     HTTP     ┌───────────────┐
 │  Hermes     │ ──(streaming)──→   │ Fusion Proxy  │ ──────────→ │ OpenCode Serve │
 │  Agent      │ ←───────────────── │   v0.4.0      │ ←────────── │  (port 8800)   │
-│             │   64 tools via MCP │  (port 4101)  │ session     │  110 free      │
-│             │ ←──────────────── │               │ reuse       │  models        │
+│             │   64 tools via MCP │  (port 4101)  │ session     │  20 free      │
+│             │ ←──────────────── │               │ reuse       │  OpenCode      │
 └─────────────┘                   └───────┬───────┘             └───────────────┘
                                          │
                                   ┌──────┴──────┐
@@ -201,22 +201,27 @@ hermes config set model.default kimi-k2.5-free            # vision + video
 
 ## Available Free Models
 
-110 free models with generous rate limits, synced automatically from OpenCode serve.
+20 native OpenCode free models, synced automatically:
 
-| Source | Count | Example models |
-|---|---|---|
-| **NVIDIA** | **90** | Llama 3.1 70B, Gemma 3 27B, Mixtral 8x22B |
-| **OpenCode** | **20** | DeepSeek V4 Flash (1M ctx), Kimi K2.5, Minimax M3 |
+| Model | Tools | Vision | Context |
+|---|---|---|---|
+| `deepseek-v4-flash-free` | ✅ | ✅ | **1M** |
+| `kimi-k2.5-free` | ✅ | ✅+📹 | 128K |
+| `minimax-m3-free` | ✅ | ✅+📹 | 128K |
+| `qwen3.6-plus-free` | ✅ | ✅ | 128K |
+| `mimo-v2-omni-free` | ✅ | ✅+📹 | 128K |
+| `glm-5-free` | ✅ | ✅ | 128K |
+| ... and 14 more | | | |
 
 **Free model highlights:**
 
-| Model | Provider | Tools | Vision | Context |
-|---|---|---|---|---|
-| `deepseek-v4-flash-free` | opencode | ✅ | ✅ | **1M** |
-| `meta/llama-3.1-70b-instruct` | nvidia | ✅ | ❌ | 128K |
-| `kimi-k2.5-free` | opencode | ✅ | ✅+📹 | 128K |
-| `google/gemma-3-27b-it` | nvidia | ✅ | ✅ | 128K |
-| `abacusai/dracarys-llama-3_1-70b-instruct` | nvidia | ✅ | ❌ | 128K |
+| Model | Tools | Vision | Context |
+|---|---|---|---|
+| `deepseek-v4-flash-free` | ✅ | ✅ | **1M** |
+| `kimi-k2.5-free` | ✅ | ✅+📹 | 128K |
+| `minimax-m3-free` | ✅ | ✅+📹 | 128K |
+| `qwen3.6-plus-free` | ✅ | ✅ | 128K |
+| `glm-5-free` | ✅ | ✅ | 128K |
 
 ---
 
@@ -282,7 +287,7 @@ curl http://127.0.0.1:4101/health
 
 ### Chat completions return empty
 
-Some free models (like `deepseek-v4-flash-free`) return empty responses for image inputs. For vision, switch to `kimi-k2.5-free` or `google/gemma-3-27b-it`.
+Some free models (like `deepseek-v4-flash-free`) return empty responses for image inputs. For vision, switch to `kimi-k2.5-free`.
 
 ---
 
@@ -341,7 +346,7 @@ This project is open source and **built for the Hermes Agent community**. I hope
 
 ### Integração Hermes + OpenCode
 
-Motor de inferência LLM **gratuito** para o **Hermes Agent** usando **OpenCode** como backend. Substitui chamadas pagas (OpenAI, Anthropic) por 110 modelos gratuitos, com reúso de sessão e 64 ferramentas via MCP.
+Motor de inferência LLM **gratuito** para o **Hermes Agent** usando **OpenCode** como backend. Substitui chamadas pagas (OpenAI, Anthropic) por 20 modelos gratuitos, com reúso de sessão e 64 ferramentas via MCP.
 
 **Instalação:**
 
