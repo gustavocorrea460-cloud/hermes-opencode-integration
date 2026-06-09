@@ -1,42 +1,75 @@
 <div align="center">
 
-# Hermes + OpenCode Integration
+<br>
 
-[![Zero Cost Inference](https://img.shields.io/badge/💰_Zero_Cost_Inference-brightgreen?style=for-the-badge)](https://github.com/gustavocorrea460-cloud/hermes-opencode-integration)
-[![Version](https://img.shields.io/badge/version-0.4.0-blue.svg)](https://github.com/gustavocorrea460-cloud/hermes-opencode-integration)
-[![Tests](https://img.shields.io/badge/tests-73%20passed-green.svg)](https://github.com/gustavocorrea460-cloud/hermes-opencode-integration)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+# ⚡ Hermes + OpenCode Integration
 
-**🔥 Stop paying for LLM inference. Run Hermes Agent with 110 free models — zero API costs.**
+**Run Hermes Agent with 110 free models — zero API costs, zero config.**
+
+<br>
+
+[![Zero Cost Inference](https://img.shields.io/badge/💰_Zero_Cost_Inference-brightgreen?style=for-the-badge&logo=freepascal&logoColor=white)](https://github.com/gustavocorrea460-cloud/hermes-opencode-integration)
+[![Version](https://img.shields.io/github/v/release/gustavocorrea460-cloud/hermes-opencode-integration?style=flat-square&label=version)](https://github.com/gustavocorrea460-cloud/hermes-opencode-integration/releases)
+[![Tests](https://img.shields.io/badge/tests-73%20passed-green?style=flat-square)](https://github.com/gustavocorrea460-cloud/hermes-opencode-integration)
+[![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-orange?style=flat-square)](CONTRIBUTING.md)
+[![Last Commit](https://img.shields.io/github/last-commit/gustavocorrea460-cloud/hermes-opencode-integration?style=flat-square)](https://github.com/gustavocorrea460-cloud/hermes-opencode-integration)
+[![Maintained](https://img.shields.io/badge/maintained-yes-green?style=flat-square)](https://github.com/gustavocorrea460-cloud/hermes-opencode-integration)
+
+```bash
+# ✨ Try it now — one command:
+bash <(curl -fsSL https://raw.githubusercontent.com/gustavocorrea460-cloud/hermes-opencode-integration/main/install-oneliner.sh)
+```
+
+</div>
+
+<br>
+
+---
+
+## 🎯 The Problem It Solves
+
+| You pay this today | With this integration |
+|---|---|
+| **$5–50/month** for Claude/GPT API calls | **$0.00** — 110 free models |
+| **Complex setup** — multiple API keys, providers, fallbacks | **One command** — done in 2 minutes |
+| **Context lost** — new session = cold start every time | **KV cache reuse** — picks up where you left off |
+| **Limited tools** — models don't have access to your system | **64 MCP tools** — terminal, browser, cron, kanban, memory |
+
+---
+
+## ✨ What You Get
+
+<div align="center">
+
+| | | |
+|---|---|---|
+| 🎯 **Zero-cost** | ⏱️ **Session reuse** | 🔧 **MCP Bridge** |
+| 110 free models | 1:1 session mapping | 64 Hermes tools |
+| NVIDIA + OpenCode | KV cache preserved | terminal, browser, cron |
+| | | |
+| 📸 **Image support** | 💾 **Disk persistence** | 🛡️ **Security first** |
+| auto `image_url` → file | survives proxy restart | CORS, body limit, redaction |
+| | | |
+| 🧪 **73 tests** | ⚡ **Auto-start** | 🚀 **Zero config** |
+| pytest + verify.sh | systemd services | install and run |
 
 </div>
 
 ---
 
-## 🚀 Why This?
+## 📊 How It Compares
 
-| Problem | Solution |
-|---|---|
-| Hermes needs an LLM → costs $5-50/month with APIs | **$0.00** — 110 free models via OpenCode |
-| Complex setup with multiple providers | **One command** — install and done |
-| Session context lost between turns | **KV cache reuse** — 1:1 session mapping |
-| Tools not available to OpenCode models | **64 MCP tools** — terminal, browser, cron, kanban, memory |
-
----
-
-## ✨ Features at a Glance
-
-| Feature | What it means |
-|---|---|
-| 🎯 **Zero-cost inference** | 110 free models with generous limits — NVIDIA (90) + OpenCode (20) |
-| ⏱️ **Session reuse** | 1:1 Hermes ↔ OpenCode session = KV cache preserved |
-| 🔧 **MCP Bridge** | 64 Hermes tools via MCP (terminal, browser, web, cron, kanban, memory) |
-| 📸 **Image support** | OpenAI `image_url` → OpenCode `file` parts automatically |
-| 💾 **Session persistence** | Survives proxy restarts via `session_map.json` |
-| 🛡️ **Security** | CORS localhost-only, 10MB limit, log redaction, .env isolation |
-| 🧪 **Tested** | 73 pytest tests + `verify.sh` (11-step validation) |
-| ⚡ **Auto-start** | Systemd user services included
+| | **Paid API (OpenAI/Claude)** | **This integration** |
+|---|---|---|
+| 💰 Monthly cost | $5–50+ | **$0.00** |
+| 🧠 Models | GPT-4, Claude 4 | DeepSeek V4, Llama 3.1 70B, Gemma 3, + 107 more |
+| ⏱️ Context window | 128K–200K | **1M tokens** (DeepSeek) |
+| 🔧 Tool calling | ✅ | ✅ |
+| 📸 Vision | ✅ | ✅ |
+| 🔄 Session reuse | ❌ (cold start) | ✅ (KV cache) |
+| 🖥️ Local/offline | ❌ (cloud only) | ✅ (runs on your machine) |
+| ⚙️ Setup | API keys, billing, limits | **One command** |
 
 ---
 
