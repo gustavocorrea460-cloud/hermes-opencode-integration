@@ -473,7 +473,7 @@ if [ ! -f "$HERMES_DIR/.env" ]; then
     cat > "$HERMES_DIR/.env" << 'ENV'
 # Hermes + OpenCode Integration — API Keys (opcional)
 # Se quiser fallback para OpenRouter, descomente e adicione sua chave:
-# OPENROUTER_API_KEY=sk-or-v1-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+# OPENROUTER_API_KEY=coloque_sua_chave_aqui
 ENV
     ok ".env criado"
 else

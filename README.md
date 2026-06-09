@@ -1,14 +1,37 @@
 # Hermes + OpenCode Integration
 
-Motor de inferência LLM **gratuito** para o **Hermes Agent** usando **OpenCode** como backend, com proxy de sessão, MCP bridge, e 146 modelos gratuitos sincronizados dinamicamente.
+[![Version](https://img.shields.io/badge/version-0.4.0-blue.svg)](https://github.com/gustavocorrea460-cloud/hermes-opencode-integration)
+[![Tests](https://img.shields.io/badge/tests-73%20passed-green.svg)](https://github.com/gustavocorrea460-cloud/hermes-opencode-integration)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![Maintenance](https://img.shields.io/badge/maintained-yes-brightgreen.svg)](https://github.com/gustavocorrea460-cloud/hermes-opencode-integration)
 
-## Instalação (1 comando)
+> **Free LLM inference engine for Hermes Agent** — replaces paid API calls with 146 free models via OpenCode, with session reuse, MCP bridge, and zero-config setup.
+
+---
+
+## Features
+
+- **🎯 Zero-cost inference** — 146 free models (DeepSeek V4 Flash, Llama 3.1 70B, Gemma 3, Kimi K2.5, etc.)
+- **⏱️ Session reuse** — 1:1 Hermes ↔ OpenCode session mapping preserves KV cache across turns
+- **🔧 MCP Bridge** — 64 Hermes tools exposed via MCP (terminal, browser, web, cron, kanban, memory, skills)
+- **📸 Image support** — Converts OpenAI `image_url` to OpenCode `file` parts automatically
+- **💾 Session persistence** — Sessions survive proxy restarts via `session_map.json`
+- **🛡️ Security** — CORS restricted to localhost, 10MB body limit, log redaction, .env isolation
+- **🧪 Tested** — 73 pytest tests + `verify.sh` (11-step validation)
+- **⚡ Auto-start** — Systemd user services included
+
+---
+
+## Quick Start
+
+**One command installation:**
 
 ```bash
 bash <(curl -fsSL https://raw.githubusercontent.com/gustavocorrea460-cloud/hermes-opencode-integration/main/install-oneliner.sh)
 ```
 
-Ou manualmente:
+**Or clone and install:**
 
 ```bash
 git clone https://github.com/gustavocorrea460-cloud/hermes-opencode-integration.git
@@ -16,159 +39,230 @@ cd hermes-opencode-integration
 bash install.sh
 ```
 
-## Arquitetura
+After installation, just run:
 
-```
-Hermes Agent ──OpenAI──→ hermes-proxy.py ──HTTP──→ opencode serve
-    │         (streaming)    v0.4.0         (session reuse)  │
-    └── 64 tools via MCP ─→ hermes-mcp-bridge.py             │
-                            (stdio JSON-RPC 2.0)              │
-                                                        146 free models
-```
-
-## Componentes
-
-| Componente | Versão | Função |
-|---|---|---|
-| **Hermes Agent** | 0.14.x | Framework multi-plataforma de agentes |
-| **OpenCode** | 1.16.x | Motor de inferência local (CLI + serve) |
-| **Fusion Proxy** | **0.4.0** | Ponte OpenAI → OpenCode com session reuse |
-| **MCP Bridge** | 0.2.0 | Expõe 64 ferramentas Hermes via MCP |
-
-## Status
-
-- **Proxy:** ✅ Chat, streaming, tools, session reuse, 146 modelos
-- **Imagens:** ✅ `image_url` → `file` parts (limitado pelo backend)
-- **Session:** ✅ Persistida em disco, isolamento por `session_id`
-- **Segurança:** ✅ CORS restrito, body limit 10MB, .env isolado
-- **Testes:** ✅ 73 pytest, verify.sh (11 passos)
-- **Auto-start:** ✅ Systemd user services instalados
-
-## Guia de Uso
-
-### 1. Verificar se está tudo funcionando
 ```bash
-bash ~/.hermes/integration/verify.sh
+hermes
 ```
-Testa 11 pontos: processos, portas, chat, session reuse, MCP bridge. Leva ~15s.
 
-### 2. Rodar os testes automatizados
+---
+
+## Architecture
+
+```
+┌─────────────┐     OpenAI API      ┌───────────────┐     HTTP     ┌───────────────┐
+│  Hermes     │ ──(streaming)──→   │ Fusion Proxy  │ ──────────→ │ OpenCode Serve │
+│  Agent      │ ←───────────────── │   v0.4.0      │ ←────────── │  (port 8800)   │
+│             │   64 tools via MCP │  (port 4101)  │ session     │  146 free      │
+│             │ ←──────────────── │               │ reuse       │  models        │
+└─────────────┘                   └───────┬───────┘             └───────────────┘
+                                         │
+                                  ┌──────┴──────┐
+                                  │ MCP Bridge  │
+                                  │ 64 Hermes   │
+                                  │ tools       │
+                                  └─────────────┘
+```
+
+**Data flow:**
+
+1. Hermes sends an OpenAI-compatible request to the Fusion Proxy (port 4101)
+2. Proxy resolves the model, creates/reuses an OpenCode session
+3. Request is forwarded to OpenCode Serve (port 8800) with the free model
+4. Response streams back through the proxy to Hermes
+5. The MCP Bridge exposes 64 Hermes tools (terminal, browser, cron, etc.) via stdio JSON-RPC
+
+---
+
+## Prerequisites
+
+| Requirement | Version | Check |
+|---|---|---|
+| Python | 3.11+ | `python3 --version` |
+| Node.js | 20+ | `node --version` |
+| OpenCode | 1.15+ | `opencode --version` |
+| Hermes Agent | 0.14+ | `hermes --version` |
+| RAM | 2GB+ | — |
+
+---
+
+## Usage
+
+### Verify installation
+
+```bash
+~/.hermes/integration/verify.sh
+```
+
+### Manual start/stop
+
+```bash
+~/.hermes/start.sh      # Start services
+~/.hermes/stop.sh       # Stop services
+~/.hermes/status.sh     # Check status
+```
+
+### Run tests
+
 ```bash
 cd ~/.hermes/integration
-python3 -m pytest tests/ -v            # modo detalhado (73 testes)
-python3 -m pytest tests/ -q            # modo resumido
+python3 -m pytest tests/ -v
 ```
 
-### 3. Iniciar / Parar / Status
+### Systemd (auto-start on boot)
+
 ```bash
-# Início manual (abre opencode serve + proxy)
-~/.hermes/start.sh
-
-# Parar tudo
-~/.hermes/stop.sh
-
-# Ver status (processos, portas, logs)
-~/.hermes/status.sh
-
-# Logs do proxy
-tail -f ~/.hermes/logs/hermes-proxy.log
-
-# Logs do OpenCode serve
-tail -f ~/.hermes/logs/opencode-serve.log
+systemctl --user enable --now opencode-serve.service
+systemctl --user enable --now hermes-proxy.service
 ```
 
-### 4. Auto-start com systemd (iniciar no boot)
-
-Os serviços já estão instalados, só precisa ativar:
+### List available free models
 
 ```bash
-# Ativar para iniciar automaticamente no login
-systemctl --user enable opencode-serve.service
-systemctl --user enable hermes-proxy.service
-
-# Iniciar agora (sem reboot)
-systemctl --user start opencode-serve.service
-systemctl --user start hermes-proxy.service
-
-# Verificar se estão rodando
-systemctl --user status opencode-serve.service
-systemctl --user status hermes-proxy.service
-
-# Ver logs do serviço
-journalctl --user -u opencode-serve.service -n 50 --no-pager
-journalctl --user -u hermes-proxy.service -n 50 --no-pager
-
-# Parar serviços
-systemctl --user stop opencode-serve.service
-systemctl --user stop hermes-proxy.service
-
-# Desativar auto-start
-systemctl --user disable opencode-serve.service
-systemctl --user disable hermes-proxy.service
-```
-
-> **Nota:** Se você não usa systemd (ex: WSL sem systemd), use `~/.hermes/start.sh` manualmente.
-
-### 5. Gerenciar modelos
-
-```bash
-# Listar todos os 146 modelos gratuitos disponíveis
 curl http://127.0.0.1:4101/v1/models | python3 -m json.tool
-
-# Ver só modelos com visão
-curl -s http://127.0.0.1:4101/v1/models | python3 -c "
-import sys, json
-d = json.load(sys.stdin)
-for m in d['data']:
-    c = m.get('capabilities', {})
-    if 'image' in c.get('input', []):
-        print(f\"{m['id']:40s} tools={c.get('tools', False)}\")"
-
-# Trocar o modelo padrão no Hermes
-hermes config set model.default deepseek-v4-flash-free    # 1M contexto (padrão)
-hermes config set model.default meta/llama-3.1-70b-instruct  # 128K, NVIDIA free
-hermes config set model.default kimi-k2.5-free                # vision + video
-
-# Testar um modelo específico via API
-curl -s http://127.0.0.1:4101/v1/chat/completions \
-  -H "Content-Type: application/json" \
-  -d '{"model":"meta/llama-3.1-70b-instruct","messages":[{"role":"user","content":"hi"}],"stream":false}'
 ```
 
-### 6. Health check do proxy
+### Switch model
 
 ```bash
-curl http://127.0.0.1:4101/health | python3 -m json.tool
-# Retorna: version, status, serve_ready, uptime, requests, active_sessions
+hermes config set model.default deepseek-v4-flash-free    # 1M context (default)
+hermes config set model.default kimi-k2.5-free            # vision + video
 ```
 
-### 7. Resumo visual do estado
+---
 
-```
-⚡ Hermes Agent ─opencode-proxy→ hermes-proxy.py ─HTTP→ opencode serve
-   │                              v0.4.0                │ 146 free models
-   └── 64 tools via MCP bridge ─────────────────────────┘ session reuse
-```
+## Available Free Models
 
-## Documentação
+146 models automatically synced from OpenCode serve (filtered by `cost=0`):
 
-| Arquivo | Conteúdo |
-|---|---|
-| `SETUP.md` | Instalação do zero |
-| `CHECKLIST.md` | Checklist de verificação |
-| `SNAPSHOT.md` | Estado atual detalhado |
-| `ROADMAP.md` | 51 itens de melhoria (33/51 resolvidos) |
-| `verify.sh` | Script de validação (11 passos) |
-| `tests/` | 73 testes pytest |
-
-## Modelos Gratuitos
-
-146 modelos sincronizados do OpenCode serve. Filtrados por `cost=0` e excluindo `opencode-zen` (pago). Destaques:
-
-| Modelo | Provider | Tools | Visão | Contexto |
+| Model | Provider | Tools | Vision | Context |
 |---|---|---|---|---|
 | `deepseek-v4-flash-free` | opencode | ✅ | ✅ | 1M |
 | `meta/llama-3.1-70b-instruct` | nvidia | ✅ | ❌ | 128K |
 | `kimi-k2.5-free` | opencode | ✅ | ✅+📹 | 128K |
 | `minimax-m3-free` | opencode | ✅ | ✅+📹 | 128K |
 | `google/gemma-3-27b-it` | nvidia | ✅ | ✅ | 128K |
+| ... 141 more | | | | |
+
+---
+
+## Configuration
+
+| File | Purpose |
+|---|---|
+| `~/.hermes/config.yaml` | Hermes provider config (opencode-proxy) |
+| `~/.config/opencode/opencode.json` | OpenCode model + MCP config |
+| `~/.hermes/.env` | Environment variables (optional) |
+| `~/.hermes/integration/` | All integration files, tests, docs |
+
+---
+
+## Tests
+
+73 pytest tests across 2 suites:
+
+| Suite | File | Tests |
+|---|---|---|
+| Core | `tests/test_proxy_core.py` | 38 |
+| Messages | `tests/test_proxy_messages.py` | 31 |
+| Security | `test_proxy_security.py` | 4 |
+
+Coverage: `_conv_key`, `_msg_hash`, `_is_free`, `_has_images`, `_resolve_model`, `_parse_tool_calls`, `_messages_to_text`, `_messages_to_oc_parts`, `_extract_images_from_content`, `_build_full_prompt`, `_build_incremental_prompt`, `_convert_tools_to_text`.
+
+---
+
+## Security
+
+- **CORS**: Restricted to `localhost:4101` and `127.0.0.1:4101`
+- **Body limit**: 10MB maximum request size (HTTP 413)
+- **Log redaction**: API keys and tokens redacted from logs via `_RedactFilter`
+- **Session isolation**: Optional `session_id` in `_conv_key` prevents cross-conversation leaks
+- **No secrets in repo**: All API keys isolated to `~/.hermes/.env`
+- **No personal data**: Zero usernames or absolute paths in the repository
+
+---
+
+## Troubleshooting
+
+### Proxy won't start
+
+```bash
+tail -f ~/.hermes/logs/hermes-proxy.log
+# Check for port conflicts or Python errors
+```
+
+### OpenCode serve not responding
+
+```bash
+tail -f ~/.hermes/logs/opencode-serve.log
+# Check if opencode is installed: opencode --version
+```
+
+### "No free models available"
+
+```bash
+# Wait for initial model sync (up to 30s)
+# Or check proxy health:
+curl http://127.0.0.1:4101/health
+```
+
+### Chat completions return empty
+
+Some free models (like `deepseek-v4-flash-free`) return empty responses for image inputs. For vision, switch to `kimi-k2.5-free` or `google/gemma-3-27b-it`.
+
+---
+
+## Project Structure
+
+```
+📦 hermes-opencode-integration/
+├── 📜 hermes-proxy.py           # Fusion Proxy (OpenAI → OpenCode bridge)
+├── 📜 hermes-mcp-bridge.py      # MCP Bridge (64 Hermes tools)
+├── 📜 VERSION                   # Version tracking
+├── 📜 install.sh                # Installer
+├── 📜 uninstall.sh              # Uninstaller
+├── 📜 update.sh                 # Updater
+├── 📜 verify.sh                 # Validation (11 steps)
+├── 📜 README.md                 # This file
+├── 📜 CHANGELOG.md              # Version history
+├── 📜 LICENSE                   # MIT License
+├── 📜 CONTRIBUTING.md           # Contributing guide
+├── 📋 config/                   # Reference configs
+├── ⚙️ systemd/                  # Auto-start services
+├── 🧪 tests/                    # Pytest test suite (73 tests)
+└── 📁 bin/                      # Scripts
+```
+
+---
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+---
+
+## License
+
+[MIT](LICENSE) © 2026 gustavocorrea460-cloud
+
+---
+
+## 🇧🇷 Português
+
+### Integração Hermes + OpenCode
+
+Motor de inferência LLM **gratuito** para o **Hermes Agent** usando **OpenCode** como backend. Substitui chamadas pagas (OpenAI, Anthropic) por 146 modelos gratuitos, com reuso de sessão e 64 ferramentas via MCP.
+
+**Instalação:**
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/gustavocorrea460-cloud/hermes-opencode-integration/main/install-oneliner.sh)
+```
+
+**Uso:** Apenas `hermes` no terminal — o Hermes usa automaticamente os modelos gratuitos do OpenCode via proxy local.
+
+**Documentação completa** em `SNAPSHOT.md`, `ROADMAP.md`, `CHANGELOG.md` e `SETUP.md`.
+
+---
+
+*Built with ❤️ for the Hermes Agent community*
