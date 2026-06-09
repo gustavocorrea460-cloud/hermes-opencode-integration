@@ -1,0 +1,10 @@
+model:
+  default: deepseek-v4-flash-free
+  provider: opencode-proxy
+  base_url: http://127.0.0.1:4101/v1
+  api_key: ""
+  context_length: 1000000
+providers:
+  opencode-proxy:
+    base_url: http://127.0.0.1:4101/v1
+    api_mode: chat_completions

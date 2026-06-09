@@ -1,0 +1,24 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "opencode": {
+      "models": {
+        "deepseek-v4-flash-free": {
+          "limit": { "context": 1000000, "output": 65536 },
+          "modalities": { "input": ["text", "image", "video"], "output": ["text"] },
+          "attachment": true,
+          "tool_call": true
+        }
+      }
+    }
+  },
+  "mcp": {
+    "hermes-bridge": {
+      "type": "local",
+      "command": ["python3", "~/.hermes/hermes-mcp-bridge.py"],
+      "enabled": true
+    }
+  },
+  "compaction": { "reserved": 200000 },
+  "disabled_providers": []
+}

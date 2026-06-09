@@ -1,0 +1,14 @@
+# Dependências
+node_modules/
+__pycache__/
+*.pyc
+.env
+
+# Local
+session_map.json
+logs/
+*.log
+
+# Sistema
+.DS_Store
+Thumbs.db
