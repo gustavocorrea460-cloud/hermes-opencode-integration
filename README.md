@@ -329,8 +329,6 @@ This project is open source and **built for the Hermes Agent community**. I hope
 | 🔧 **Submit PRs** | Code, docs, tests — all contributions matter |
 | 📢 **Share** | Tell other Hermes users about it |
 
-> **A quick note on the name:** The project is called **Hermes Agent** (no accent), named after the Greek god **Ἑρμῆς** (Hermes) — messenger of the gods, patron of travelers, and guide of souls. Not to be confused with the French fashion house **Hermès** (with accent). Both derive from the same name, but the AI agent project uses the anglicized spelling.
-
 ---
 
 ## License
@@ -355,6 +353,4 @@ bash <(curl -fsSL https://raw.githubusercontent.com/gustavocorrea460-cloud/herme
 
 **Documentação completa** em `SNAPSHOT.md`, `ROADMAP.md`, `CHANGELOG.md` e `SETUP.md`.
 
----
 
-*Built with ❤️ for the Hermes Agent community*
