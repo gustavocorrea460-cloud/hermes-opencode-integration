@@ -1274,13 +1274,13 @@ class ProxyHandler(http.server.BaseHTTPRequestHandler):
             msg = choice["message"]
 
             if msg.get("tool_calls"):
-                for tc in msg["tool_calls"]:
+                for i, tc in enumerate(msg["tool_calls"]):
                     delta = {
                         "role": "assistant",
                         "content": None,
                         "tool_calls": [
                             {
-                                "index": 0,
+                                "index": i,
                                 "id": tc["id"],
                                 "type": "function",
                                 "function": tc["function"],
