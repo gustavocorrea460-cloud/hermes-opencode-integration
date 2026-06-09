@@ -193,31 +193,17 @@ curl http://127.0.0.1:4101/v1/models | python3 -m json.tool
 ### Switch model
 
 ```bash
-hermes config set model.default deepseek-v4-flash-free    # 1M context (default)
-hermes config set model.default kimi-k2.5-free            # vision + video
+hermes config set model.default <model-name-from-list>
 ```
 
 ---
 
 ## Available Free Models
 
-20 native OpenCode free models, synced automatically:
-
-| Model | Tools | Vision | Context |
-|---|---|---|---|
-| `deepseek-v4-flash-free` | ✅ | ✅ | **1M** |
-| `kimi-k2.5-free` | ✅ | ✅+📹 | 128K |
-| `minimax-m3-free` | ✅ | ✅+📹 | 128K |
-| `qwen3.6-plus-free` | ✅ | ✅ | 128K |
-| `mimo-v2-omni-free` | ✅ | ✅+📹 | 128K |
-| `glm-5-free` | ✅ | ✅ | 128K |
-| ... and 14 more | | | |
-
-**Available free models (via `opencode serve`):**
-
 ```bash
-# See the full list
+# See the full list of OpenCode native free models
 curl http://127.0.0.1:4101/v1/models | python3 -m json.tool
+```
 ```
 
 ---
@@ -284,7 +270,7 @@ curl http://127.0.0.1:4101/health
 
 ### Chat completions return empty
 
-Some free models (like `deepseek-v4-flash-free`) return empty responses for image inputs. For vision, switch to `kimi-k2.5-free`.
+Some free models return empty responses for image inputs. Try a different model from the list.
 
 ---
 
