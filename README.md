@@ -343,7 +343,7 @@ This project is open source and **built for the Hermes Agent community**. I hope
 
 ### Integração Hermes + OpenCode
 
-Motor de inferência LLM **gratuito** para o **Hermes Agent** usando **OpenCode** como backend. Substitui chamadas pagas (OpenAI, Anthropic) por 110 modelos gratuitos, com reuso de sessão e 64 ferramentas via MCP.
+Motor de inferência LLM **gratuito** para o **Hermes Agent** usando **OpenCode** como backend. Substitui chamadas pagas (OpenAI, Anthropic) por 110 modelos gratuitos, com reúso de sessão e 64 ferramentas via MCP.
 
 **Instalação:**
 
