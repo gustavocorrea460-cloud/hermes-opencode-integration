@@ -1,25 +1,42 @@
+<div align="center">
+
 # Hermes + OpenCode Integration
 
+[![Zero Cost Inference](https://img.shields.io/badge/💰_Zero_Cost_Inference-brightgreen?style=for-the-badge)](https://github.com/gustavocorrea460-cloud/hermes-opencode-integration)
 [![Version](https://img.shields.io/badge/version-0.4.0-blue.svg)](https://github.com/gustavocorrea460-cloud/hermes-opencode-integration)
 [![Tests](https://img.shields.io/badge/tests-73%20passed-green.svg)](https://github.com/gustavocorrea460-cloud/hermes-opencode-integration)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
-[![Maintenance](https://img.shields.io/badge/maintained-yes-brightgreen.svg)](https://github.com/gustavocorrea460-cloud/hermes-opencode-integration)
 
-> **Free LLM inference engine for Hermes Agent** — replaces paid API calls with 146 free models via OpenCode, with session reuse, MCP bridge, and zero-config setup.
+**🔥 Stop paying for LLM inference. Run Hermes Agent with 146 free models — zero API costs.**
+
+</div>
 
 ---
 
-## Features
+## 🚀 Why This?
 
-- **🎯 Zero-cost inference** — 146 free models (DeepSeek V4 Flash, Llama 3.1 70B, Gemma 3, Kimi K2.5, etc.)
-- **⏱️ Session reuse** — 1:1 Hermes ↔ OpenCode session mapping preserves KV cache across turns
-- **🔧 MCP Bridge** — 64 Hermes tools exposed via MCP (terminal, browser, web, cron, kanban, memory, skills)
-- **📸 Image support** — Converts OpenAI `image_url` to OpenCode `file` parts automatically
-- **💾 Session persistence** — Sessions survive proxy restarts via `session_map.json`
-- **🛡️ Security** — CORS restricted to localhost, 10MB body limit, log redaction, .env isolation
-- **🧪 Tested** — 73 pytest tests + `verify.sh` (11-step validation)
-- **⚡ Auto-start** — Systemd user services included
+| Problem | Solution |
+|---|---|
+| Hermes needs an LLM → costs $5-50/month with APIs | **$0.00** — 146 free models via OpenCode |
+| Complex setup with multiple providers | **One command** — install and done |
+| Session context lost between turns | **KV cache reuse** — 1:1 session mapping |
+| Tools not available to OpenCode models | **64 MCP tools** — terminal, browser, cron, kanban, memory |
+
+---
+
+## ✨ Features at a Glance
+
+| Feature | What it means |
+|---|---|
+| 🎯 **Zero-cost inference** | DeepSeek V4 Flash, Llama 3.1 70B, Gemma 3, Kimi K2.5 — all free |
+| ⏱️ **Session reuse** | 1:1 Hermes ↔ OpenCode session = KV cache preserved |
+| 🔧 **MCP Bridge** | 64 Hermes tools via MCP (terminal, browser, web, cron, kanban, memory) |
+| 📸 **Image support** | OpenAI `image_url` → OpenCode `file` parts automatically |
+| 💾 **Session persistence** | Survives proxy restarts via `session_map.json` |
+| 🛡️ **Security** | CORS localhost-only, 10MB limit, log redaction, .env isolation |
+| 🧪 **Tested** | 73 pytest tests + `verify.sh` (11-step validation) |
+| ⚡ **Auto-start** | Systemd user services included
 
 ---
 
