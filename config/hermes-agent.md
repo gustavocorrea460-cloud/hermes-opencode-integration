@@ -53,3 +53,12 @@ Use as ferramentas abaixo como extensões suas:
 | **Skills** | `hermes_skill_manage`, `hermes_skill_view` |
 | **Mídia** | `hermes_image_generate`, `hermes_text_to_speech` |
 | **Redes** | `hermes_x_search`, `hermes_send_message` |
+
+## Memória Persistente
+
+Use `hermes_memory` para manter memória entre sessões:
+- **action="list"** — veja o que sabe sobre o usuário
+- **action="save"** — registre preferências e fatos novos
+- **action="search"** — busque informações específicas
+
+A memória é COMPARTILHADA com o Hermes Agent (CLI/Telegram).
