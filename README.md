@@ -8,7 +8,7 @@
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
-**🔥 Stop paying for LLM inference. Run Hermes Agent with 146 free models — zero API costs.**
+**🔥 Stop paying for LLM inference. Run Hermes Agent with 110 free models — zero API costs.**
 
 </div>
 
@@ -18,7 +18,7 @@
 
 | Problem | Solution |
 |---|---|
-| Hermes needs an LLM → costs $5-50/month with APIs | **$0.00** — 146 free models via OpenCode |
+| Hermes needs an LLM → costs $5-50/month with APIs | **$0.00** — 110 free models via OpenCode |
 | Complex setup with multiple providers | **One command** — install and done |
 | Session context lost between turns | **KV cache reuse** — 1:1 session mapping |
 | Tools not available to OpenCode models | **64 MCP tools** — terminal, browser, cron, kanban, memory |
@@ -29,7 +29,7 @@
 
 | Feature | What it means |
 |---|---|
-| 🎯 **Zero-cost inference** | 146 free models — NVIDIA (90), OpenRouter (32), OpenCode (20), Google (2), + others |
+| 🎯 **Zero-cost inference** | 110 free models with generous limits — NVIDIA (90) + OpenCode (20) |
 | ⏱️ **Session reuse** | 1:1 Hermes ↔ OpenCode session = KV cache preserved |
 | 🔧 **MCP Bridge** | 64 Hermes tools via MCP (terminal, browser, web, cron, kanban, memory) |
 | 📸 **Image support** | OpenAI `image_url` → OpenCode `file` parts automatically |
@@ -70,7 +70,7 @@ hermes
 ┌─────────────┐     OpenAI API      ┌───────────────┐     HTTP     ┌───────────────┐
 │  Hermes     │ ──(streaming)──→   │ Fusion Proxy  │ ──────────→ │ OpenCode Serve │
 │  Agent      │ ←───────────────── │   v0.4.0      │ ←────────── │  (port 8800)   │
-│             │   64 tools via MCP │  (port 4101)  │ session     │  146 free      │
+│             │   64 tools via MCP │  (port 4101)  │ session     │  110 free      │
 │             │ ←──────────────── │               │ reuse       │  models        │
 └─────────────┘                   └───────┬───────┘             └───────────────┘
                                          │
@@ -153,15 +153,12 @@ hermes config set model.default kimi-k2.5-free            # vision + video
 
 ## Available Free Models
 
-146 free models automatically synced from OpenCode serve. Breakdown by provider:
+110 free models with generous rate limits, synced automatically from OpenCode serve.
 
-| Provider | Count | Example models |
+| Source | Count | Example models |
 |---|---|---|
-| NVIDIA | 90 | Llama 3.1 70B, Gemma 3 27B, Mixtral 8x22B |
-| OpenRouter | 32 | Hermes 3 405B, various community models |
-| **OpenCode** | **20** | **DeepSeek V4 Flash, Kimi K2.5, Minimax M3** |
-| Google | 2 | Gemma 4 31B |
-| Others | 2 | SiliconFlow, HuggingFace |
+| **NVIDIA** | **90** | Llama 3.1 70B, Gemma 3 27B, Mixtral 8x22B |
+| **OpenCode** | **20** | DeepSeek V4 Flash (1M ctx), Kimi K2.5, Minimax M3 |
 
 **Free model highlights:**
 
@@ -280,7 +277,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ### Integração Hermes + OpenCode
 
-Motor de inferência LLM **gratuito** para o **Hermes Agent** usando **OpenCode** como backend. Substitui chamadas pagas (OpenAI, Anthropic) por 146 modelos gratuitos, com reuso de sessão e 64 ferramentas via MCP.
+Motor de inferência LLM **gratuito** para o **Hermes Agent** usando **OpenCode** como backend. Substitui chamadas pagas (OpenAI, Anthropic) por 110 modelos gratuitos, com reuso de sessão e 64 ferramentas via MCP.
 
 **Instalação:**
 
