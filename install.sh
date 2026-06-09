@@ -304,6 +304,7 @@ FILES_TO_INSTALL=(
     "restart.sh"
     "verify.sh"
     "sync-configs.sh"
+    "config/hermes-agent.md"
     "pyproject.toml"
     "tests/conftest.py"
     "tests/test_proxy_core.py"
@@ -395,6 +396,13 @@ done
 
 echo ""
 info "Total: $INSTALLED arquivos instalados"
+
+# Instalar agente hermes para OpenCode
+if [ -f "$HERMES_DIR/config/hermes-agent.md" ]; then
+    mkdir -p "$HOME/.config/opencode/agents"
+    cp "$HERMES_DIR/config/hermes-agent.md" "$HOME/.config/opencode/agents/hermes.md"
+    ok "Agente OpenCode: hermes.md"
+fi
 
 # ═══════════════════════════════════════════════════════════════════════
 #  5/8 — CONFIGURAÇÃO
