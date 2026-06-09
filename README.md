@@ -29,7 +29,7 @@
 
 | Feature | What it means |
 |---|---|
-| 🎯 **Zero-cost inference** | DeepSeek V4 Flash, Llama 3.1 70B, Gemma 3, Kimi K2.5 — all free |
+| 🎯 **Zero-cost inference** | 146 free models — NVIDIA (90), OpenRouter (32), OpenCode (20), Google (2), + others |
 | ⏱️ **Session reuse** | 1:1 Hermes ↔ OpenCode session = KV cache preserved |
 | 🔧 **MCP Bridge** | 64 Hermes tools via MCP (terminal, browser, web, cron, kanban, memory) |
 | 📸 **Image support** | OpenAI `image_url` → OpenCode `file` parts automatically |
@@ -153,16 +153,25 @@ hermes config set model.default kimi-k2.5-free            # vision + video
 
 ## Available Free Models
 
-146 models automatically synced from OpenCode serve (filtered by `cost=0`):
+146 free models automatically synced from OpenCode serve. Breakdown by provider:
+
+| Provider | Count | Example models |
+|---|---|---|
+| NVIDIA | 90 | Llama 3.1 70B, Gemma 3 27B, Mixtral 8x22B |
+| OpenRouter | 32 | Hermes 3 405B, various community models |
+| **OpenCode** | **20** | **DeepSeek V4 Flash, Kimi K2.5, Minimax M3** |
+| Google | 2 | Gemma 4 31B |
+| Others | 2 | SiliconFlow, HuggingFace |
+
+**Free model highlights:**
 
 | Model | Provider | Tools | Vision | Context |
 |---|---|---|---|---|
-| `deepseek-v4-flash-free` | opencode | ✅ | ✅ | 1M |
+| `deepseek-v4-flash-free` | opencode | ✅ | ✅ | **1M** |
 | `meta/llama-3.1-70b-instruct` | nvidia | ✅ | ❌ | 128K |
 | `kimi-k2.5-free` | opencode | ✅ | ✅+📹 | 128K |
-| `minimax-m3-free` | opencode | ✅ | ✅+📹 | 128K |
 | `google/gemma-3-27b-it` | nvidia | ✅ | ✅ | 128K |
-| ... 141 more | | | | |
+| `abacusai/dracarys-llama-3_1-70b-instruct` | nvidia | ✅ | ❌ | 128K |
 
 ---
 
