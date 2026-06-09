@@ -34,14 +34,16 @@ import urllib.request
 from pathlib import Path
 from typing import Any
 
+
 class _RedactFilter(logging.Filter):
     """Redact common secrets from log messages."""
+
     _PATTERNS = [
-        (re.compile(r'(api[_-]?key["\']?\s*[:=]\s*["\']?)[^"\'\s,}]+'), r'\1***'),
-        (re.compile(r'(sk-or-v1-)[a-zA-Z0-9]{20,}'), r'\1***'),
-        (re.compile(r'(nvapi-)[a-zA-Z0-9_-]{20,}'), r'\1***'),
-        (re.compile(r'(\bsecret["\']?\s*[:=]\s*["\'])[^"\']+'), r'\1***'),
-        (re.compile(r'(\btoken["\']?\s*[:=]\s*["\'])[^"\']+'), r'\1***'),
+        (re.compile(r'(api[_-]?key["\']?\s*[:=]\s*["\']?)[^"\'\s,}]+'), r"\1***"),
+        (re.compile(r"(sk-or-v1-)[a-zA-Z0-9]{20,}"), r"\1***"),
+        (re.compile(r"(nvapi-)[a-zA-Z0-9_-]{20,}"), r"\1***"),
+        (re.compile(r'(\bsecret["\']?\s*[:=]\s*["\'])[^"\']+'), r"\1***"),
+        (re.compile(r'(\btoken["\']?\s*[:=]\s*["\'])[^"\']+'), r"\1***"),
     ]
 
     def filter(self, record: logging.LogRecord) -> bool:
@@ -129,6 +131,10 @@ def _sync_models() -> None:
                 continue
             # Skip paid OpenCode Zen models
             if pid == "opencode-zen":
+                continue
+            # Keep only confirmed-free OpenCode models
+            # (some 'opencode' models require Zen subscription)
+            if pid not in ("opencode",):
                 continue
 
             count_free += 1
@@ -853,6 +859,15 @@ def handle_chat_completion(body: dict) -> dict | None:
         }
 
     system_prompt = _extract_system_prompt(messages)
+
+    # Inject platform context so the model knows its environment
+    platform_hint = (
+        " You are running inside Hermes Agent with messaging platforms already configured and connected. "
+        "When the user asks to send a message, use hermes_send_message — the token and chat ID are already set."
+    )
+    if platform_hint not in system_prompt:
+        system_prompt += platform_hint
+
     # Inject JSON format instructions when response_format is requested
     if response_format:
         rf_type = response_format.get("type", "")
