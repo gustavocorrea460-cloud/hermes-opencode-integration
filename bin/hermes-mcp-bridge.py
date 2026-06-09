@@ -20,19 +20,23 @@ Usage:
   # "mcp": { "hermes-bridge": { "type": "local", "command": ["python3", "/path/to/hermes-mcp-bridge.py"] } }
 """
 
+import asyncio
+import concurrent.futures
 import functools
 import json
 import logging
 import os
-import asyncio
-import concurrent.futures
 import sys
+import threading
 import time
 import traceback
 from pathlib import Path
 from typing import Any
+
 MCP_VERSION = "2025-03-26"
-_tool_executor = concurrent.futures.ThreadPoolExecutor(max_workers=10, thread_name_prefix="mcp-tool")
+_tool_executor = concurrent.futures.ThreadPoolExecutor(
+    max_workers=10, thread_name_prefix="mcp-tool"
+)
 TOOL_TIMEOUT = 300  # 5 min timeout per tool call
 
 logging.basicConfig(
@@ -107,6 +111,133 @@ def convert_schema_to_mcp(hermes_schema: dict) -> dict:
     return mcp_schema
 
 
+# ── Memory (file-based, independent of Hermes session) ─────────────────
+
+MEMORY_DIR = Path.home() / ".hermes" / "hermes-agent" / "memories"
+MEMORY_FILE = MEMORY_DIR / "MEMORY.md"
+USER_FILE = MEMORY_DIR / "USER.md"
+_MEMORY_LOCK = threading.Lock()
+
+
+def _ensure_memory_files() -> None:
+    """Ensure memory directory and files exist."""
+    MEMORY_DIR.mkdir(parents=True, exist_ok=True)
+    for f in (MEMORY_FILE, USER_FILE):
+        if not f.exists():
+            f.write_text("")
+
+
+def _memory_save(target: str, content: str) -> dict:
+    """Append a fact to memory (same format as Hermes native memory)."""
+    _ensure_memory_files()
+    file = USER_FILE if target == "user" else MEMORY_FILE
+    with _MEMORY_LOCK:
+        with open(file, "a") as f:
+            f.write(f"\n§\n{content}")
+    return {"success": True, "target": target, "characters": len(content)}
+
+
+def _memory_replace(target: str, old: str, new: str) -> dict:
+    """Replace a memory entry (substring match, same as Hermes native)."""
+    _ensure_memory_files()
+    file = USER_FILE if target == "user" else MEMORY_FILE
+    with _MEMORY_LOCK:
+        text = file.read_text()
+        if old in text:
+            text = text.replace(old, new, 1)
+            file.write_text(text)
+            return {"success": True, "replaced": old}
+        return {"success": False, "error": f"'{old[:50]}' not found in memory"}
+
+
+def _memory_remove(target: str, content: str) -> dict:
+    """Remove a memory entry by content."""
+    _ensure_memory_files()
+    file = USER_FILE if target == "user" else MEMORY_FILE
+    with _MEMORY_LOCK:
+        entries = file.read_text().split("§")
+        before = len(entries)
+        entries = [e for e in entries if content not in e]
+        file.write_text("§".join(entries))
+        removed = before - len(entries)
+        return {"success": removed > 0, "removed": removed}
+
+
+def _memory_search(query: str, target: str = "all") -> list:
+    """Search memory entries by keyword."""
+    _ensure_memory_files()
+    results = []
+    files = []
+    if target in ("all", "memory"):
+        files.append(("memory", MEMORY_FILE))
+    if target in ("all", "user"):
+        files.append(("user", USER_FILE))
+
+    for label, file in files:
+        if not file.exists():
+            continue
+        with _MEMORY_LOCK:
+            entries = file.read_text().split("§")
+        for i, entry in enumerate(entries):
+            entry = entry.strip()
+            if not entry:
+                continue
+            if query.lower() in entry.lower():
+                results.append({"source": label, "index": i, "content": entry[:1000]})
+
+    return results if results else [{"message": "No memories found matching query"}]
+
+
+def _memory_list(target: str = "all") -> list:
+    """List all memory entries."""
+    _ensure_memory_files()
+    entries = []
+    files = []
+    if target in ("all", "memory"):
+        files.append(("memory", MEMORY_FILE))
+    if target in ("all", "user"):
+        files.append(("user", USER_FILE))
+
+    for label, file in files:
+        if not file.exists():
+            continue
+        with _MEMORY_LOCK:
+            raw = file.read_text().split("§")
+        for i, entry in enumerate(raw):
+            entry = entry.strip()
+            if entry:
+                entries.append({"source": label, "index": i, "content": entry[:500]})
+
+    return entries if entries else [{"message": "No memories stored yet"}]
+
+
+def _handle_memory_tool(arguments: dict) -> str:
+    """Handle hermes_memory tool call locally (bypasses Hermes session requirement)."""
+    action = arguments.get("action", "list")
+    target = arguments.get("target", "memory")
+    content = arguments.get("content", "")
+    query = arguments.get("query", "")
+
+    if action == "save" or action == "add":
+        result = _memory_save(target, content)
+    elif action == "replace":
+        result = _memory_replace(
+            target, arguments.get("old", ""), arguments.get("new", "")
+        )
+    elif action == "remove":
+        result = _memory_remove(target, content)
+    elif action == "search":
+        result = _memory_search(query or content, target)
+    elif action == "list":
+        result = _memory_list(target)
+    elif action == "get":
+        result = _memory_list(target)
+    else:
+        result = {"error": f"Unknown action: {action}"}
+
+    return json.dumps(result, indent=2)
+
+
 # --- Request Handlers ---
 
 
@@ -137,6 +268,10 @@ def handle_tools_list(req: dict) -> str:
     mcp_tools = []
     for name in sorted(_all_tool_names):
         try:
+            # Skip memory tool — we provide our own version
+            if name == "memory":
+                continue
+
             entry = registry.get_entry(name)
             if entry is None:
                 continue
@@ -154,6 +289,48 @@ def handle_tools_list(req: dict) -> str:
             logger.debug("Error converting tool %s: %s", name, e)
             continue
 
+    # Add custom memory tool (file-based, no Hermes session needed)
+    mcp_tools.append(
+        {
+            "name": "hermes_memory",
+            "description": "[Hermes] Save/retrieve persistent memory. "
+            "Stored in ~/.hermes/hermes-agent/memories/ — shared with Hermes Agent. "
+            "Actions: save, search, list, replace, remove.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "action": {
+                        "type": "string",
+                        "description": "Operation: save | search | list | replace | remove",
+                        "enum": ["save", "search", "list", "replace", "remove"],
+                    },
+                    "content": {
+                        "type": "string",
+                        "description": "Fact/conversation to save (for save/add/remove actions)",
+                    },
+                    "query": {
+                        "type": "string",
+                        "description": "Search query (for search action)",
+                    },
+                    "target": {
+                        "type": "string",
+                        "description": "Memory target: memory | user (default: all for search/list)",
+                        "enum": ["memory", "user", "all"],
+                    },
+                    "old": {
+                        "type": "string",
+                        "description": "Text to replace (for replace action)",
+                    },
+                    "new": {
+                        "type": "string",
+                        "description": "Replacement text (for replace action)",
+                    },
+                },
+                "required": ["action"],
+            },
+        }
+    )
+
     return mcp_result(req_id, {"tools": mcp_tools})
 
 
@@ -170,6 +347,21 @@ def handle_tools_call(req: dict) -> str:
     hermes_name = mcp_name
     if hermes_name.startswith("hermes_"):
         hermes_name = hermes_name[7:]
+
+    # Intercept memory tool — use file-based handler instead of Hermes session
+    if hermes_name == "memory":
+        try:
+            result = _handle_memory_tool(arguments)
+            content = [{"type": "text", "text": result}]
+            return mcp_result(req_id, {"content": content})
+        except Exception as e:
+            return mcp_result(
+                req_id,
+                {
+                    "content": [{"type": "text", "text": f"Memory error: {e}"}],
+                    "isError": True,
+                },
+            )
 
     entry = registry.get_entry(hermes_name)
     if entry is None:
@@ -205,7 +397,12 @@ def handle_tools_call(req: dict) -> str:
         return mcp_result(
             req_id,
             {
-                "content": [{"type": "text", "text": f"Error: {mcp_name} timed out after {TOOL_TIMEOUT}s"}],
+                "content": [
+                    {
+                        "type": "text",
+                        "text": f"Error: {mcp_name} timed out after {TOOL_TIMEOUT}s",
+                    }
+                ],
                 "isError": True,
             },
         )
