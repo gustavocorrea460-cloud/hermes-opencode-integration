@@ -40,6 +40,21 @@
 
 ---
 
+## 📌 What This IS vs What This ISN'T
+
+| ✅ **This IS** | ❌ **This ISN'T** |
+|---|---|
+| **A drop-in LLM engine for Hermes** — replaces paid APIs with free models | **Not a Hermes replacement** — you still use `hermes` command normally |
+| **A proxy** that translates OpenAI API calls to OpenCode serve | **Not a new agent framework** — no new tools, no new CLI |
+| **Session-aware** — reuses OpenCode sessions to preserve KV cache | **Not a session manager** — Hermes still manages its own conversations |
+| **An MCP bridge** — exposes 64 Hermes tools to OpenCode models | **Not an MCP server catalog** — doesn't install external MCPs (GitHub, DBs, etc.) |
+| **A local inference engine** — runs on your machine, no external API calls | **Not a cloud service** — you provide the hardware, Hermes provides the agent |
+| **Free** — 110 models with $0 input and output cost | **Not unlimited** — external providers (NVIDIA) may have rate limits |
+
+**Bottom line:** Hermes works exactly as before — same commands, same tools, same skills, same cron, same Telegram/Discord/Slack integration. The only difference is that **the LLM inference is now free**, running through OpenCode serve instead of a paid API.
+
+---
+
 ## Quick Start
 
 **One command installation:**
