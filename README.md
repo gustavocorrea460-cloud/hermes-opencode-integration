@@ -4,7 +4,7 @@
 
 # ⚡ Hermes + OpenCode Integration
 
-**Run Hermes Agent with 20 free models — zero API costs, zero config.**
+**Run Hermes Agent with OpenCode native free models — zero API costs, zero config.**
 
 <br>
 
@@ -31,7 +31,7 @@ bash <(curl -fsSL https://raw.githubusercontent.com/gustavocorrea460-cloud/herme
 
 | You pay this today | With this integration |
 |---|---|
-| **$5–50/month** for Claude/GPT API calls | **$0.00** — 20 free models |
+| **$5–50/month** for Claude/GPT API calls | **$0.00** — OpenCode native free models |
 | **Complex setup** — multiple API keys, providers, fallbacks | **One command** — done in 2 minutes |
 | **Context lost** — new session = cold start every time | **KV cache reuse** — picks up where you left off |
 | **Limited tools** — models don't have access to your system | **64 MCP tools** — terminal, browser, cron, kanban, memory |
@@ -45,7 +45,7 @@ bash <(curl -fsSL https://raw.githubusercontent.com/gustavocorrea460-cloud/herme
 | | | |
 |---|---|---|
 | 🎯 **Zero-cost** | ⏱️ **Session reuse** | 🔧 **MCP Bridge** |
-| 20 free models | 1:1 session mapping | 64 Hermes tools |
+| OpenCode native | 1:1 session mapping | 64 Hermes tools |
 | OpenCode native | KV cache preserved | terminal, browser, cron |
 | | | |
 | 📸 **Image support** | 💾 **Disk persistence** | 🛡️ **Security first** |
@@ -63,7 +63,7 @@ bash <(curl -fsSL https://raw.githubusercontent.com/gustavocorrea460-cloud/herme
 | | **Paid API (OpenAI/Claude)** | **This integration** |
 |---|---|---|
 | 💰 Monthly cost | $5–50+ | **$0.00** |
-| 🧠 Models | GPT-4, Claude 4 | DeepSeek V4 Flash, Kimi K2.5, Minimax M3, + 17 more |
+| 🧠 Models | GPT-4, Claude 4 | DeepSeek V4 Flash, Kimi K2.5, Minimax M3 + more |
 | ⏱️ Context window | 128K–200K | **1M tokens** (DeepSeek) |
 | 🔧 Tool calling | ✅ | ✅ |
 | 📸 Vision | ✅ | ✅ |
@@ -118,7 +118,7 @@ hermes
 ┌─────────────┐     OpenAI API      ┌───────────────┐     HTTP     ┌───────────────┐
 │  Hermes     │ ──(streaming)──→   │ Fusion Proxy  │ ──────────→ │ OpenCode Serve │
 │  Agent      │ ←───────────────── │   v0.4.0      │ ←────────── │  (port 8800)   │
-│             │   64 tools via MCP │  (port 4101)  │ session     │  20 free      │
+│             │   64 tools via MCP │  (port 4101)  │ session     │  free models  │
 │             │ ←──────────────── │               │ reuse       │  OpenCode      │
 └─────────────┘                   └───────┬───────┘             └───────────────┘
                                          │
