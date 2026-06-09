@@ -63,8 +63,8 @@ bash <(curl -fsSL https://raw.githubusercontent.com/gustavocorrea460-cloud/herme
 | | **Paid API (OpenAI/Claude)** | **This integration** |
 |---|---|---|
 | 💰 Monthly cost | $5–50+ | **$0.00** |
-| 🧠 Models | GPT-4, Claude 4 | DeepSeek V4 Flash, Kimi K2.5, Minimax M3 + more |
-| ⏱️ Context window | 128K–200K | **1M tokens** (DeepSeek) |
+| 🧠 Models | GPT-4, Claude 4 | OpenCode native free models (DeepSeek + more) |
+| ⏱️ Context window | 128K–200K | Up to **1M tokens** |
 | 🔧 Tool calling | ✅ | ✅ |
 | 📸 Vision | ✅ | ✅ |
 | 🔄 Session reuse | ❌ (cold start) | ✅ (KV cache) |
@@ -82,7 +82,7 @@ bash <(curl -fsSL https://raw.githubusercontent.com/gustavocorrea460-cloud/herme
 | **Session-aware** — reuses OpenCode sessions to preserve KV cache | **Not a session manager** — Hermes still manages its own conversations |
 | **An MCP bridge** — exposes 64 Hermes tools to OpenCode models | **Not an MCP server catalog** — doesn't install external MCPs (GitHub, DBs, etc.) |
 | **A local inference engine** — runs on your machine, no external API calls | **Not a cloud service** — you provide the hardware, Hermes provides the agent |
-| **Free** — 20 OpenCode native models with $0 cost | **Not unlimited** — some models may have rate limits |
+| **Free** — OpenCode native models with $0 cost | **Not unlimited** — some models may have rate limits |
 
 **Bottom line:** Hermes works exactly as before — same commands, same tools, same skills, same cron, same Telegram/Discord/Slack integration. The only difference is that **the LLM inference is now free**, running through OpenCode serve instead of a paid API.
 
@@ -118,7 +118,7 @@ hermes
 ┌─────────────┐     OpenAI API      ┌───────────────┐     HTTP     ┌───────────────┐
 │  Hermes     │ ──(streaming)──→   │ Fusion Proxy  │ ──────────→ │ OpenCode Serve │
 │  Agent      │ ←───────────────── │   v0.4.0      │ ←────────── │  (port 8800)   │
-│             │   64 tools via MCP │  (port 4101)  │ session     │  free models  │
+│             │   64 tools via MCP │  (port 4101)  │ session     │  Free LLM     │
 │             │ ←──────────────── │               │ reuse       │  OpenCode      │
 └─────────────┘                   └───────┬───────┘             └───────────────┘
                                          │
@@ -213,15 +213,12 @@ hermes config set model.default kimi-k2.5-free            # vision + video
 | `glm-5-free` | ✅ | ✅ | 128K |
 | ... and 14 more | | | |
 
-**Free model highlights:**
+**Available free models (via `opencode serve`):**
 
-| Model | Tools | Vision | Context |
-|---|---|---|---|
-| `deepseek-v4-flash-free` | ✅ | ✅ | **1M** |
-| `kimi-k2.5-free` | ✅ | ✅+📹 | 128K |
-| `minimax-m3-free` | ✅ | ✅+📹 | 128K |
-| `qwen3.6-plus-free` | ✅ | ✅ | 128K |
-| `glm-5-free` | ✅ | ✅ | 128K |
+```bash
+# See the full list
+curl http://127.0.0.1:4101/v1/models | python3 -m json.tool
+```
 
 ---
 
