@@ -15,7 +15,7 @@ NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=strict
 ProtectHome=read-only
-ReadWritePaths=%h/.opencode %h/.config/opencode
+ReadWritePaths=%h/.opencode %h/.config/opencode %h/.local/share/opencode
 
 [Install]
 WantedBy=default.target
